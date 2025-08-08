@@ -1,0 +1,111 @@
+body {
+  margin: 0;
+  padding: 0;a, Geneva, Verdana, sans-serif;
+  background: url('https://images.unsplash.com/photo-1512820790803-83ca734da794') no-repeat center center fixed;
+  background-size: cover;
+  color: #333;
+  transition: background 0.5s, color 0.5s;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  backdrop-filter: blur(8px);
+  padding: 20px;
+}
+
+.title {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.form-box {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+}
+
+h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.btn, .google-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.google-btn {
+  background-color: #db4437;
+  color: white;
+}
+
+.switch-text {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.switch-text a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.mode-toggle {
+  margin-top: 20px;
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.dark-mode {
+  background: #121212 url('c:\Users\User\Downloads\An Old Bookcase In A Library Background, 3d Illustration Stockfoto, 3d Illustration Wall Wooden Background With Classical Library Books, Hd Photography Photo Background Image And Wallpaper for Free Download.jpeg') no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+}
+
+.dark-mode .form-box {
+  background-color: rgba(30, 30, 30, 0.9);
+}
+
+.dark-mode .input-group input {
+  background-color: #222;
+  color: white;
+  border: 1px solid #444;
+}
+
+.dark-mode .btn, .dark-mode .google-btn {
+  opacity: 0.95;
+}

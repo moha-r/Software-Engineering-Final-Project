@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register | Digital Library</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">Digital Library</h1>
+    <div class="form-box">
+      <h2>Register</h2>
+      <form action="#">
+        <div class="input-group">
+          <input type="text" placeholder="Full Name" required />
+        </div>
+        <div class="input-group">
+          <input type="email" placeholder="Email Address" required />
+        </div>
+        <div class="input-group">
+          <input type="password" placeholder="Password" required />
+        </div>
+        <div class="input-group">
+          <input type="password" placeholder="Confirm Password" required />
+        </div>
+        <button type="submit" class="btn">Register</button>
+      </form>
+      <p class="switch-text">
+        Already have an account?
+        <a href="login.html">Login</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('toggleMode').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+  </script>
+</body>
+</html>
