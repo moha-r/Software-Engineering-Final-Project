@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Digital Library</title>
+  <link rel="stylesheet" href="home.css" />
+  <style>
+    /* Remove book-info styles inside the card */
+    .book-info h3 {
+      background-color: transparent;
+      color: #4a90e2; /* distinctive color for title */
+      padding: 0;
+      margin: 5px 0 2px 0;
+      border-radius: 0;
+      font-size: 12px; /* smaller font size for title */
+    }
+    .book-info p {
+      background-color: transparent;
+      color: #666;
+      padding: 0;
+      margin: 0;
+      border-radius: 0;
+      font-size: 10px; /* smaller font size for author */
+    }
+    /* Adjust Search button text color to match the search bar design */
+    .search-button {
+      color: #333; /* changed from #000 to #333 for better consistency with the semi-transparent background */
+      font-weight: bold;
+      cursor: pointer;
+      background-color: rgba(255, 255, 255, 0.5);
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      margin-left: 10px;
+    }
+    /* New styles for category sections */
+    .category-section {
+      margin-top: 40px;
+    }
+    .category-section h2 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 20px;
+    }
+    /* Move book-info outside the book card and position below the cover */
+    .book-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .book-cover {
+      width: 100%;
+      height: auto;
+    }
+    .book-info {
+      margin-top: 6px;
+      text-align: center;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar for search and navigation -->
+    <aside class="sidebar">
+      <h1 class="logo"><img src="logo2.png" alt="Logo" style="height: 40px;"/></h1>
+      <ul class="nav">
+        <li><a href="#booksGrid" class="active">Home</a></li>
+        <li><a href="#fictionSection">Fiction</a></li>
+        <li><a href="#nonFictionSection">Non‑Fiction</a></li>
+        <li><a href="#bestSellersSection">Best Sellers</a></li>
+        <li><a href="#newArrivalsSection">New Arrivals</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="main-content">
+      <!-- Top bar with search field and user info -->
+      <header class="topbar" style="position: relative; height: 250px; background-image: url('photo-1506744038136-46273834b3fb.jpeg'); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center;">
+        <div class="search-bar" style="background-color: rgba(255, 255, 255, 0.3); padding: 10px 20px; border-radius: 8px; display: flex; align-items: center; width: 60%; max-width: 600px;">
+          <input type="text" id="searchInput" placeholder="Search by title or author…" style="flex-grow: 1; padding: 10px 15px; border: none; border-radius: 4px; background: transparent; color: #ffffff; font-size: 16px; outline: none;"/>
+          <button id="searchButton" type="button" style="margin-left: 10px; padding: 10px 20px; border: none; border-radius: 4px; background-color: rgba(255, 255, 255, 0.5);" class="search-button">
+            Search
+          </button>
+        </div>
+        <div class="user-info" style="position: absolute; top: 10px; right: 20px; color: white;">
+          <span class="user-name"></span>
+        </div>
+      </header>
+
+      <!-- Most Popular Books display area -->
+      <section class="books-section" id="booksGridSection">
+        <h2>Most popular</h2>
+        <div class="books-grid" id="booksGrid">
+          <!-- Most popular books from API will be inserted here -->
+        </div>
+      </section>
+
+      <!-- New category sections -->
+      <section class="category-section" id="fictionSection">
+        <h2>Fiction</h2>
+        <div class="books-grid" id="fictionGrid">
+          <!-- Fiction books will be inserted here -->
+        </div>
+      </section>
+
+      <section class="category-section" id="nonFictionSection">
+        <h2>Non-Fiction</h2>
+        <div class="books-grid" id="nonFictionGrid">
+          <!-- Non-Fiction books will be inserted here -->
+        </div>
+      </section>
+
+      <section class="category-section" id="bestSellersSection">
+        <h2>Best Sellers</h2>
+        <div class="books-grid" id="bestSellersGrid">
+          <!-- Best Sellers books will be inserted here -->
+        </div>
+      </section>
+
+      <section class="category-section" id="newArrivalsSection">
+        <h2>New Arrivals</h2>
+        <div class="books-grid" id="newArrivalsGrid">
+          <!-- New Arrivals books will be inserted here -->
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    const booksGrid = document.getElementById('booksGrid');
+    const fictionGrid = document.getElementById('fictionGrid');
+    const nonFictionGrid = document.getElementById('nonFictionGrid');
+    const bestSellersGrid = document.getElementById('bestSellersGrid');
+    const newArrivalsGrid = document.getElementById('newArrivalsGrid');
+
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+
+    function createBookCard(book) {
+      const bookCard = document.createElement('div');
+      bookCard.className = 'book-card';
+
+      // Wrap book card content in a link to book-details.html with book ID
+      const bookLink = document.createElement('a');
+      bookLink.href = `book-details.html?id=${encodeURIComponent(book.id)}`;
+      bookLink.style.textDecoration = 'none';
+      bookLink.style.color = 'inherit';
+
+      const bookCover = document.createElement('div');
+      bookCover.className = 'book-cover';
+      if (book.volumeInfo.imageLinks) {
+        const img = document.createElement('img');
+        // Use higher resolution image if available
+        if (book.volumeInfo.imageLinks.extraLarge) {
+          img.src = book.volumeInfo.imageLinks.extraLarge;
+        } else if (book.volumeInfo.imageLinks.large) {
+          img.src = book.volumeInfo.imageLinks.large;
+        } else if (book.volumeInfo.imageLinks.medium) {
+          img.src = book.volumeInfo.imageLinks.medium;
+        } else if (book.volumeInfo.imageLinks.thumbnail) {
+          img.src = book.volumeInfo.imageLinks.thumbnail;
+        } else {
+          img.src = '';
+        }
+        img.alt = book.volumeInfo.title || 'Book Cover';
+        img.style.width = '100%';
+        img.style.height = 'auto';
+        bookCover.appendChild(img);
+      } else {
+        bookCover.textContent = 'No Image';
+        bookCover.style.display = 'flex';
+        bookCover.style.alignItems = 'center';
+        bookCover.style.justifyContent = 'center';
+        bookCover.style.backgroundColor = '#ccc';
+        bookCover.style.height = '150px';
+        bookCover.style.color = '#666';
+      }
+
+      bookLink.appendChild(bookCover);
+      bookCard.appendChild(bookLink);
+
+      // Create book info outside the link, below the cover
+      const bookInfo = document.createElement('div');
+      bookInfo.className = 'book-info';
+
+      const title = document.createElement('h3');
+      title.textContent = book.volumeInfo.title || 'No Title';
+
+      const authors = document.createElement('p');
+      authors.textContent = book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown Author';
+
+      bookInfo.appendChild(title);
+      bookInfo.appendChild(authors);
+
+      bookCard.appendChild(bookInfo);
+
+      return bookCard;
+    }
+
+    async function fetchBooks(query = 'best seller', maxResults = 12) {
+      try {
+        const response = await fetch(
+          `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=${maxResults}`
+        );
+        console.log('Fetching books with query:', query);
+        const data = await response.json();
+        console.log('Received data:', data);
+        return data.items || [];
+      } catch (error) {
+        console.error('Error fetching books:', error);
+        return [];
+      }
+    }
+
+    async function loadAllSections() {
+      booksGrid.innerHTML = 'Loading...';
+      fictionGrid.innerHTML = 'Loading...';
+      nonFictionGrid.innerHTML = 'Loading...';
+      bestSellersGrid.innerHTML = 'Loading...';
+      newArrivalsGrid.innerHTML = 'Loading...';
+
+      // Load Most Popular Books (using 'best seller')
+      const allBooks = await fetchBooks('best seller', 12);
+      booksGrid.innerHTML = '';
+      if (allBooks.length > 0) {
+        allBooks.forEach(book => {
+          booksGrid.appendChild(createBookCard(book));
+        });
+      } else {
+        booksGrid.textContent = 'No books found.';
+      }
+
+      // Fiction
+      const fictionBooks = await fetchBooks('fiction', 12);
+      fictionGrid.innerHTML = '';
+      if (fictionBooks.length > 0) {
+        fictionBooks.forEach(book => {
+          fictionGrid.appendChild(createBookCard(book));
+        });
+      } else {
+        fictionGrid.textContent = 'No fiction books found.';
+      }
+
+      // Non-Fiction
+      const nonFictionBooks = await fetchBooks('non-fiction', 12);
+      nonFictionGrid.innerHTML = '';
+      if (nonFictionBooks.length > 0) {
+        nonFictionBooks.forEach(book => {
+          nonFictionGrid.appendChild(createBookCard(book));
+        });
+      } else {
+        nonFictionGrid.textContent = 'No non-fiction books found.';
+      }
+
+      // Best Sellers (using a popular keyword to simulate best sellers)
+      const bestSellersBooks = await fetchBooks('best sellers', 12);
+      bestSellersGrid.innerHTML = '';
+      if (bestSellersBooks.length > 0) {
+        bestSellersBooks.forEach(book => {
+          bestSellersGrid.appendChild(createBookCard(book));
+        });
+      } else {
+        bestSellersGrid.textContent = 'No best sellers found.';
+      }
+
+      // New Arrivals (using a filter for recent years)
+      const currentYear = new Date().getFullYear();
+      const newArrivalsBooks = await fetchBooks(`subject:fiction+publishedDate:${currentYear}`, 12);
+      newArrivalsGrid.innerHTML = '';
+      if (newArrivalsBooks.length > 0) {
+        newArrivalsBooks.forEach(book => {
+          newArrivalsGrid.appendChild(createBookCard(book));
+        });
+      } else {
+        newArrivalsGrid.textContent = 'No new arrivals found.';
+      }
+    }
+
+    searchButton.addEventListener('click', async () => {
+      const query = searchInput.value.trim();
+      if (query) {
+        booksGrid.innerHTML = 'Loading...';
+        const searchedBooks = await fetchBooks(query, 12);
+        booksGrid.innerHTML = '';
+        if (searchedBooks.length > 0) {
+          searchedBooks.forEach(book => {
+            booksGrid.appendChild(createBookCard(book));
+          });
+        } else {
+          booksGrid.textContent = 'No books found.';
+        }
+      }
+    });
+
+    searchInput.addEventListener('keypress', async (e) => {
+      if (e.key === 'Enter') {
+        const query = searchInput.value.trim();
+        if (query) {
+          booksGrid.innerHTML = 'Loading...';
+          const searchedBooks = await fetchBooks(query, 12);
+          booksGrid.innerHTML = '';
+          if (searchedBooks.length > 0) {
+            searchedBooks.forEach(book => {
+              booksGrid.appendChild(createBookCard(book));
+            });
+          } else {
+            booksGrid.textContent = 'No books found.';
+          }
+        }
+      }
+    });
+
+    // Initial load of all sections
+    loadAllSections();
+  </script>
+</body>
+</html>

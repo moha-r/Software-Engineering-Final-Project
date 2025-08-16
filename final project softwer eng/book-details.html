@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Details</title>
+    <link rel="stylesheet" href="book-details.css">
+</head>
+<body>
+    <header style="background-color: #6dc5c8; padding: 15px 5px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="width: 120px; height: 80px; border-radius: 16px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+                <img src="PHOTO-2025-08-16-04-27-24-removebg-preview.png" alt="Logo" style="max-width: 200%; max-height: 200%; object-fit: contain; display: block;">
+            </div>
+            <h1 style="margin: 0; font-size: 1.8em;">Book Details</h1>
+        </div>
+        <nav style="display: flex; align-items: center; gap: 10px;">
+            <button onclick="window.location.href='about.html'" style="background: none; border: none; color: white; font-weight: 600; cursor: pointer; font-size: 1em; padding: 8px 12px; border-radius: 4px; transition: background-color 0.3s ease;">About</button>
+            <button onclick="window.location.href='contact.html'" style="background: none; border: none; color: white; font-weight: 600; cursor: pointer; font-size: 1em; padding: 8px 12px; border-radius: 4px; transition: background-color 0.3s ease;">Contact Us</button>
+            <button onclick="window.location.href='home.html'" style="background: none; border: none; color: white; font-weight: 600; cursor: pointer; font-size: 1em; padding: 8px 12px; border-radius: 4px; transition: background-color 0.3s ease;">Home</button>
+        </nav>
+    </header>
+    <div id="book-details-container" style="padding: 100px 20px 20px 20px;"></div>
+
+    <script>
+        // Extract the book ID from the URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookId = urlParams.get('id');
+        console.log('Book ID from URL:', bookId);
+
+        if (bookId) {
+            // Fetch book details from the Google Books API using the extracted ID
+            fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(bookData => {
+                    console.log('Fetched book data:', bookData);
+                    const book = bookData.volumeInfo;
+                    const accessInfo = bookData.accessInfo || {};
+                    const saleInfo = bookData.saleInfo || {};
+                    const container = document.getElementById('book-details-container');
+                    // Prepare star rating HTML if available
+                    let ratingSection = '';
+                    if (typeof book.averageRating === 'number') {
+                        const rating = book.averageRating;
+                        // Generate star icons (full, half, empty)
+                        const maxStars = 5;
+                        let starsHtml = '';
+                        for (let i = 1; i <= maxStars; i++) {
+                            if (rating >= i) {
+                                starsHtml += '★';
+                            } else if (rating >= i - 0.5) {
+                                starsHtml += '☆'; // Use empty star for half, or swap for half-star if preferred
+                            } else {
+                                starsHtml += '☆';
+                            }
+                        }
+                        ratingSection = `
+                            <section style="margin-bottom: 20px;">
+                                <h3 style="margin-bottom: 8px;">Average Rating</h3>
+                                <div style="font-size: 1.6em; color: #FFD700; letter-spacing: 2px;">
+                                    ${starsHtml} <span style="font-size:1em; color:#333; vertical-align:middle;">(${rating.toFixed(1)})</span>
+                                </div>
+                            </section>
+                        `;
+                    } else {
+                        ratingSection = `
+                            <section style="margin-bottom: 20px;">
+                                <h3 style="margin-bottom: 8px;">Average Rating</h3>
+                                <div style="font-size: 1.1em; color: #888;">No rating available</div>
+                            </section>
+                        `;
+                    }
+
+                    // Prepare price section if available
+                    let priceSection = '';
+                    if (saleInfo && saleInfo.listPrice && typeof saleInfo.listPrice.amount === 'number' && saleInfo.listPrice.currencyCode) {
+                        priceSection = `
+                            <p>Price: ${saleInfo.listPrice.amount} ${saleInfo.listPrice.currencyCode}</p>
+                        `;
+                    }
+
+                    container.innerHTML = `
+                        ${book.imageLinks && book.imageLinks.thumbnail ? `<img src="${book.imageLinks.thumbnail}" alt="Book Cover" style="max-width:200px; display:block; margin-bottom:20px;">` : ''}
+                        <h1>${book.title}</h1>
+                        <p>Author: ${book.authors ? book.authors.join(', ') : 'Unknown'}</p>
+                        ${ratingSection}
+                        ${priceSection}
+                        <p>Description: ${book.description ? book.description : 'No description available.'}</p>
+                        <p>Publisher: ${book.publisher ? book.publisher : 'Unknown'}</p>
+                        <p>Published Date: ${book.publishedDate ? book.publishedDate : 'Unknown'}</p>
+                        <p>Page Count: ${book.pageCount ? book.pageCount : 'Unknown'}</p>
+                        <p>Language: ${book.language ? book.language.toUpperCase() : 'Unknown'}</p>
+                        <p>Categories: ${book.categories ? book.categories.join(', ') : 'None'}</p>
+                    `;
+
+                    // Determine the download link if available
+                    let downloadLink = null;
+                    if (accessInfo.pdf && accessInfo.pdf.isAvailable && accessInfo.pdf.acsTokenLink) {
+                        downloadLink = accessInfo.pdf.acsTokenLink;
+                    } else if (accessInfo.epub && accessInfo.epub.isAvailable && accessInfo.epub.acsTokenLink) {
+                        downloadLink = accessInfo.epub.acsTokenLink;
+                    }
+
+                    if (downloadLink) {
+                        const downloadButton = document.createElement('button');
+                        downloadButton.textContent = 'Download Book';
+                        downloadButton.style.marginTop = '20px';
+                        downloadButton.onclick = () => {
+                            window.open(downloadLink, '_blank');
+                        };
+                        container.appendChild(downloadButton);
+                    } else {
+                        const noDownloadMsg = document.createElement('p');
+                        noDownloadMsg.textContent = 'No download available for this book.';
+                        noDownloadMsg.style.marginTop = '20px';
+                        container.appendChild(noDownloadMsg);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching book details:', error);
+                    document.getElementById('book-details-container').innerText = 'Error loading book details.';
+                });
+        } else {
+            console.log('Book ID not found in URL.');
+            document.getElementById('book-details-container').innerText = 'Book ID not found in URL.';
+        }
+    </script>
+</body>
+</html>

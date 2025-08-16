@@ -1,0 +1,273 @@
+/* Base styles */
+:root {
+  --primary-color: #6dc5c8;
+  --secondary-color: #d6f1ef;
+  --background-color: #f7f9fa;
+  --card-background: #ffffff;
+  --text-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Sidebar styles */
+.sidebar {
+  width: 260px;
+  background-color: var(--secondary-color);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+.sidebar .logo {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 28px;
+}
+
+/* تكبير حجم الشعار في الشريط الجانبي */
+.sidebar .logo img {
+  /* الشعار في الشريط الجانبي يجب أن لا يكون كبيرًا جدًا */
+  height: 100px !important;
+  max-width: 120px;
+  width: auto;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+/* الشعار داخل شريط البحث في التوب بار */
+.topbar .logo img {
+  /* الشعار داخل شريط البحث يجب أن يتناسب مع ارتفاع شريط البحث */
+  height: 32px !important;
+  max-width: 90px;
+  width: auto;
+  object-fit: contain;
+}
+
+.nav {
+  list-style: none;
+  flex-grow: 1;
+}
+
+.nav li {
+  margin-bottom: 10px;
+}
+
+.nav a {
+  display: block;
+  text-decoration: none;
+  color: var(--text-color);
+  padding: 10px 12px;
+  border-radius: 10px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav a.active,
+.nav a:hover {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+}
+
+/* Main content styles */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px 40px 20px;
+  background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1350&q=80');
+  background-size: cover;
+  background-position: center;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  position: relative;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 10px 15px;
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background-color: transparent;
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  outline: none;
+  ::placeholder {
+    color: rgba(255, 255, 255, 0.8);
+  }
+  transition: background-color 0.3s ease;
+}
+
+.search-bar button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  background-color: var(--primary-color);
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-indent: 0;
+  color: #ffffff;
+  font-size: 16px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.15);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.search-bar button:hover {
+  background-color: #5bb1b4;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+.search-bar button:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.search-bar button::before {
+  content: "";
+  display: none;
+}
+
+/* أزل النص الافتراضي من الزر */
+/* .search-bar button {
+  color: transparent;
+  text-indent: -9999px;
+} */
+
+.user-info {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.books-section {
+  padding: 20px;
+}
+
+.books-section h2 {
+  margin-bottom: 16px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* تعديل شبكة الكتب لتناسب الفئات المتعددة */
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.book-card {
+  background-color: var(--card-background);
+  border-radius: 15px;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-cover {
+  background-color: var(--primary-color);
+  height: 220px;
+}
+
+.book-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* إزالة .book-info من داخل الكارد ونقله تحت الكارد */
+/* حذف الخلفية والظل من داخل الكارد */
+
+/* Book info section moved below the card */
+.book-info {
+  padding: 8px 10px;
+  margin-top: 8px;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+
+.book-info h3 {
+  font-size: 12px;
+  margin-bottom: 0;
+  color: #173c47;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-shadow: none;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: block;
+  line-height: 1.2;
+  background: none;
+  color: var(--text-color);
+}
+
+.book-info p {
+  font-size: 11px;
+  color: var(--text-color);
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-weight: 400;
+  margin: 0;
+  text-shadow: none;
+}
