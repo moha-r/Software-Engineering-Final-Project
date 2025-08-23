@@ -14,8 +14,8 @@
             <h1 style="margin: 0; font-size: 1.8em;">Book Details</h1>
         </div>
         <nav style="display: flex; align-items: center; gap: 10px;">
-            <button onclick="window.location.href='about.html'" style="background: none; border: none; color: white; font-weight: 600; cursor: pointer; font-size: 1em; padding: 8px 12px; border-radius: 4px; transition: background-color 0.3s ease;">About</button>
-            <button onclick="window.location.href='contact.html'" style="background: none; border: none; color: white; font-weight: 600; cursor: pointer; font-size: 1em; padding: 8px 12px; border-radius: 4px; transition: background-color 0.3s ease;">Contact Us</button>
+            <button onclick="window.location.href='mianpage.html#about'" style="background: none; border: none; color: white; font-weight: 600; cursor: pointer; font-size: 1em; padding: 8px 12px; border-radius: 4px; transition: background-color 0.3s ease;">About</button>
+            <button onclick="window.location.href='home.html'" style="background: none; border: none; color: white; font-weight: 600; cursor: pointer; font-size: 1em; padding: 8px 12px; border-radius: 4px; transition: background-color 0.3s ease;">Search</button>
             <button onclick="window.location.href='home.html'" style="background: none; border: none; color: white; font-weight: 600; cursor: pointer; font-size: 1em; padding: 8px 12px; border-radius: 4px; transition: background-color 0.3s ease;">Home</button>
         </nav>
     </header>
@@ -27,108 +27,275 @@
         const bookId = urlParams.get('id');
         console.log('Book ID from URL:', bookId);
 
-        if (bookId) {
-            // Fetch book details from the Google Books API using the extracted ID
-            fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
-                .then(response => {
-                    console.log('Response status:', response.status);
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(bookData => {
-                    console.log('Fetched book data:', bookData);
-                    const book = bookData.volumeInfo;
-                    const accessInfo = bookData.accessInfo || {};
-                    const saleInfo = bookData.saleInfo || {};
-                    const container = document.getElementById('book-details-container');
-                    // Prepare star rating HTML if available
-                    let ratingSection = '';
-                    if (typeof book.averageRating === 'number') {
-                        const rating = book.averageRating;
-                        // Generate star icons (full, half, empty)
-                        const maxStars = 5;
-                        let starsHtml = '';
-                        for (let i = 1; i <= maxStars; i++) {
-                            if (rating >= i) {
-                                starsHtml += '★';
-                            } else if (rating >= i - 0.5) {
-                                starsHtml += '☆'; // Use empty star for half, or swap for half-star if preferred
-                            } else {
-                                starsHtml += '☆';
-                            }
-                        }
-                        ratingSection = `
-                            <section style="margin-bottom: 20px;">
-                                <h3 style="margin-bottom: 8px;">Average Rating</h3>
-                                <div style="font-size: 1.6em; color: #FFD700; letter-spacing: 2px;">
-                                    ${starsHtml} <span style="font-size:1em; color:#333; vertical-align:middle;">(${rating.toFixed(1)})</span>
-                                </div>
-                            </section>
-                        `;
-                    } else {
-                        ratingSection = `
-                            <section style="margin-bottom: 20px;">
-                                <h3 style="margin-bottom: 8px;">Average Rating</h3>
-                                <div style="font-size: 1.1em; color: #888;">No rating available</div>
-                            </section>
-                        `;
-                    }
-
-                    // Prepare price section if available
-                    let priceSection = '';
-                    if (saleInfo && saleInfo.listPrice && typeof saleInfo.listPrice.amount === 'number' && saleInfo.listPrice.currencyCode) {
-                        priceSection = `
-                            <p>Price: ${saleInfo.listPrice.amount} ${saleInfo.listPrice.currencyCode}</p>
-                        `;
-                    }
-
-                    container.innerHTML = `
-                        ${book.imageLinks && book.imageLinks.thumbnail ? `<img src="${book.imageLinks.thumbnail}" alt="Book Cover" style="max-width:200px; display:block; margin-bottom:20px;">` : ''}
-                        <h1>${book.title}</h1>
-                        <p>Author: ${book.authors ? book.authors.join(', ') : 'Unknown'}</p>
-                        ${ratingSection}
-                        ${priceSection}
-                        <p>Description: ${book.description ? book.description : 'No description available.'}</p>
-                        <p>Publisher: ${book.publisher ? book.publisher : 'Unknown'}</p>
-                        <p>Published Date: ${book.publishedDate ? book.publishedDate : 'Unknown'}</p>
-                        <p>Page Count: ${book.pageCount ? book.pageCount : 'Unknown'}</p>
-                        <p>Language: ${book.language ? book.language.toUpperCase() : 'Unknown'}</p>
-                        <p>Categories: ${book.categories ? book.categories.join(', ') : 'None'}</p>
-                    `;
-
-                    // Determine the download link if available
-                    let downloadLink = null;
-                    if (accessInfo.pdf && accessInfo.pdf.isAvailable && accessInfo.pdf.acsTokenLink) {
-                        downloadLink = accessInfo.pdf.acsTokenLink;
-                    } else if (accessInfo.epub && accessInfo.epub.isAvailable && accessInfo.epub.acsTokenLink) {
-                        downloadLink = accessInfo.epub.acsTokenLink;
-                    }
-
-                    if (downloadLink) {
-                        const downloadButton = document.createElement('button');
-                        downloadButton.textContent = 'Download Book';
-                        downloadButton.style.marginTop = '20px';
-                        downloadButton.onclick = () => {
-                            window.open(downloadLink, '_blank');
-                        };
-                        container.appendChild(downloadButton);
-                    } else {
-                        const noDownloadMsg = document.createElement('p');
-                        noDownloadMsg.textContent = 'No download available for this book.';
-                        noDownloadMsg.style.marginTop = '20px';
-                        container.appendChild(noDownloadMsg);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching book details:', error);
-                    document.getElementById('book-details-container').innerText = 'Error loading book details.';
-                });
-        } else {
-            console.log('Book ID not found in URL.');
-            document.getElementById('book-details-container').innerText = 'Book ID not found in URL.';
+        // Helper: fetch eBay price (simulate for demo)
+        async function fetchEbayPrice(query) {
+            return {
+                title: query,
+                price: (Math.random() * 20 + 5).toFixed(2),
+                currency: "USD",
+                thumbnail: "",
+                link: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(query)}`,
+                platform: "eBay"
+            };
         }
+        // Helper: fetch Amazon price (simulate for demo)
+        async function fetchAmazonPrice(query) {
+            return {
+                title: query,
+                price: (Math.random() * 25 + 8).toFixed(2),
+                currency: "USD",
+                thumbnail: "",
+                link: `https://www.amazon.com/s?k=${encodeURIComponent(query)}`,
+                platform: "Amazon"
+            };
+        }
+        // Helper: find lowest price
+        function findLowestPrice(sources) {
+            let min = null;
+            sources.forEach((src) => {
+                if (
+                    src &&
+                    src.price !== null &&
+                    src.price !== undefined &&
+                    !isNaN(Number(src.price))
+                ) {
+                    if (!min || Number(src.price) < Number(min.price)) {
+                        min = src;
+                    }
+                }
+            });
+            return min;
+        }
+
+        async function renderBookDetails(bookId) {
+            if (!bookId) {
+                document.getElementById('book-details-container').innerText = 'Book ID not found in URL.';
+                return;
+            }
+            // Fetch book details from Google Books API
+            try {
+                const response = await fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const bookData = await response.json();
+                const book = bookData.volumeInfo;
+                const accessInfo = bookData.accessInfo || {};
+                const saleInfo = bookData.saleInfo || {};
+                const container = document.getElementById('book-details-container');
+
+                // Prepare star rating HTML if available
+                let ratingSection = '';
+                if (typeof book.averageRating === 'number') {
+                    const rating = book.averageRating;
+                    // Generate star icons (full, half, empty)
+                    const maxStars = 5;
+                    let starsHtml = '';
+                    for (let i = 1; i <= maxStars; i++) {
+                        if (rating >= i) {
+                            starsHtml += '★';
+                        } else if (rating >= i - 0.5) {
+                            starsHtml += '☆';
+                        } else {
+                            starsHtml += '☆';
+                        }
+                    }
+                    ratingSection = `
+                        <section style="margin-bottom: 20px;">
+                            <h3 style="margin-bottom: 8px;">Average Rating</h3>
+                            <div style="font-size: 1.6em; color: #FFD700; letter-spacing: 2px;">
+                                ${starsHtml} <span style="font-size:1em; color:#333; vertical-align:middle;">(${rating.toFixed(1)})</span>
+                            </div>
+                        </section>
+                    `;
+                } else {
+                    ratingSection = `
+                        <section style="margin-bottom: 20px;">
+                            <h3 style="margin-bottom: 8px;">Average Rating</h3>
+                            <div style="font-size: 1.1em; color: #888;">No rating available</div>
+                        </section>
+                    `;
+                }
+
+                // Prepare price section if available
+                let priceSection = '';
+                if (saleInfo && saleInfo.listPrice && typeof saleInfo.listPrice.amount === 'number' && saleInfo.listPrice.currencyCode) {
+                    priceSection = `
+                        <p>Price: ${saleInfo.listPrice.amount} ${saleInfo.listPrice.currencyCode}</p>
+                    `;
+                }
+
+                // Compose the initial part of the book details HTML (up to rating section)
+                container.innerHTML = `
+                    ${book.imageLinks && book.imageLinks.thumbnail ? `<img src="${book.imageLinks.thumbnail}" alt="Book Cover" style="max-width:200px; display:block; margin-bottom:20px;">` : ''}
+                    <h1>${book.title}</h1>
+                    <p>Author: ${book.authors ? book.authors.join(', ') : 'Unknown'}</p>
+                    ${ratingSection}
+                `;
+
+                // ---- Price Comparison Section ----
+                // Use book title for external price search
+                const queryTitle = book.title;
+                // Fetch prices from Google Books (already fetched), Amazon, eBay
+                let googlePrice = null;
+                let googleCurrency = null;
+                if (saleInfo && saleInfo.listPrice && typeof saleInfo.listPrice.amount === 'number') {
+                    googlePrice = saleInfo.listPrice.amount;
+                    googleCurrency = saleInfo.listPrice.currencyCode || 'USD';
+                }
+                // Fetch Amazon and eBay prices in parallel
+                const [ebay, amazon] = await Promise.all([
+                    fetchEbayPrice(queryTitle),
+                    fetchAmazonPrice(queryTitle),
+                ]);
+                const sources = [];
+                sources.push({
+                    platform: 'Google Books',
+                    price: googlePrice,
+                    currency: googleCurrency,
+                    link: book.infoLink || `https://books.google.com/books?id=${bookId}`,
+                });
+                if (amazon) {
+                    sources.push({
+                        platform: amazon.platform,
+                        price: amazon.price,
+                        currency: amazon.currency,
+                        link: amazon.link,
+                    });
+                }
+                if (ebay) {
+                    sources.push({
+                        platform: ebay.platform,
+                        price: ebay.price,
+                        currency: ebay.currency,
+                        link: ebay.link,
+                    });
+                }
+                const lowest = findLowestPrice(sources);
+                // Create price comparison table
+                const tableWrapper = document.createElement('section');
+                tableWrapper.style.marginTop = '30px';
+                tableWrapper.style.background = 'linear-gradient(135deg, #e8fefb, #f7fbff)';
+                tableWrapper.style.padding = '18px 10px 10px 10px';
+                tableWrapper.style.borderRadius = '15px';
+                tableWrapper.style.boxShadow = '0 12px 25px rgba(74, 144, 226, 0.08)';
+                tableWrapper.innerHTML = `<h3 style="margin-bottom: 12px;">Price Comparison</h3>`;
+                const table = document.createElement('table');
+                table.style.width = '100%';
+                table.style.marginTop = '2px';
+                table.style.borderCollapse = 'collapse';
+                table.innerHTML = `
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;padding:4px 8px;">Platform</th>
+                      <th style="text-align:left;padding:4px 8px;">Price</th>
+                      <th style="text-align:left;padding:4px 8px;">Buy Link</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${sources.map(src => `
+                      <tr${lowest && src.platform === lowest.platform && src.price == lowest.price ? ' class="best-deal"' : ''}>
+                        <td style="padding:4px 8px;">${src.platform}</td>
+                        <td style="padding:4px 8px;">
+                          ${src.price !== null && src.price !== undefined
+                            ? src.price + " " + (src.currency || "USD")
+                            : "N/A"}
+                          ${
+                            lowest && src.platform === lowest.platform && src.price == lowest.price
+                              ? '<span style="color:#27ae60;font-size:0.95em;"> (Lowest)</span>'
+                              : ""
+                          }
+                        </td>
+                        <td style="padding:4px 8px;">
+                          <a href="${src.link || "#"}" target="_blank" style="color: #4ba3a6; text-decoration: underline;">Buy on ${src.platform}</a>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                `;
+                tableWrapper.appendChild(table);
+                // Best price highlight
+                if (lowest && lowest.price !== null) {
+                    const bestDeal = document.createElement("div");
+                    bestDeal.style.marginTop = "10px";
+                    bestDeal.style.fontWeight = "bold";
+                    bestDeal.style.color = "#27ae60";
+                    bestDeal.textContent =
+                      "Best Price: " +
+                      lowest.price +
+                      " " +
+                      (lowest.currency || "USD") +
+                      " on " +
+                      lowest.platform;
+                    tableWrapper.appendChild(bestDeal);
+                }
+                // Append price comparison section directly after rating section
+                container.appendChild(tableWrapper);
+
+                // ---- Download/Preview Buttons Section (after price table) ----
+                // Create a wrapper to align buttons below the price table
+                const actionSection = document.createElement('div');
+                actionSection.style.display = 'flex';
+                actionSection.style.gap = '20px';
+                actionSection.style.marginTop = '28px';
+                actionSection.style.marginBottom = '8px';
+                actionSection.style.alignItems = 'center';
+                actionSection.style.flexWrap = 'wrap';
+
+                // Determine the download link if available
+                let downloadLink = null;
+                if (accessInfo.pdf && accessInfo.pdf.isAvailable && accessInfo.pdf.acsTokenLink) {
+                    downloadLink = accessInfo.pdf.acsTokenLink;
+                } else if (accessInfo.epub && accessInfo.epub.isAvailable && accessInfo.epub.acsTokenLink) {
+                    downloadLink = accessInfo.epub.acsTokenLink;
+                }
+
+                if (downloadLink) {
+                    const downloadButton = document.createElement('button');
+                    downloadButton.textContent = 'Download Book';
+                    downloadButton.onclick = () => {
+                        window.open(downloadLink, '_blank');
+                    };
+                    actionSection.appendChild(downloadButton);
+                } else {
+                    const noDownloadMsg = document.createElement('p');
+                    noDownloadMsg.textContent = 'No download available for this book.';
+                    noDownloadMsg.style.marginTop = '0';
+                    actionSection.appendChild(noDownloadMsg);
+                }
+
+                // Add link to Google Books Preview if previewLink is available and valid
+                if (book.previewLink && book.previewLink.trim() !== '') {
+                    const previewLink = document.createElement('a');
+                    previewLink.href = book.previewLink;
+                    previewLink.target = '_blank';
+                    previewLink.rel = 'noopener noreferrer';
+                    previewLink.textContent = 'Preview this book on Google Books';
+                    previewLink.className = 'google-books-preview-btn';
+                    actionSection.appendChild(previewLink);
+                } else {
+                    const noPreviewMsg = document.createElement('p');
+                    noPreviewMsg.textContent = 'No preview available for this book.';
+                    noPreviewMsg.style.marginTop = '0';
+                    actionSection.appendChild(noPreviewMsg);
+                }
+                // Append the actionSection after price table
+                container.appendChild(actionSection);
+
+                // Append the remaining book details (description, etc.)
+                container.innerHTML += `
+                    <p>Description: ${book.description ? book.description : 'No description available.'}</p>
+                    <p>Publisher: ${book.publisher ? book.publisher : 'Unknown'}</p>
+                    <p>Published Date: ${book.publishedDate ? book.publishedDate : 'Unknown'}</p>
+                    <p>Page Count: ${book.pageCount ? book.pageCount : 'Unknown'}</p>
+                    <p>Language: ${book.language ? book.language.toUpperCase() : 'Unknown'}</p>
+                    <p>Categories: ${book.categories ? book.categories.join(', ') : 'None'}</p>
+                `;
+            } catch (error) {
+                console.error('Error fetching book details:', error);
+                document.getElementById('book-details-container').innerText = 'Error loading book details.';
+            }
+        }
+
+        renderBookDetails(bookId);
     </script>
 </body>
 </html>

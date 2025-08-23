@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jaless Library - Complete 3D Experience</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #7fb069;
+            --secondary-green: #6fa66b;
+            --light-green: #a8cc8c;
+            --dark-green: #5a8a4f;
+            --accent-blue: #4a90e2;
+            --text-dark: #2d3436;
+            --text-medium: #636e72;
+            --text-light: #ddd6fe;
+            --white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #7fb069 100%);
+            overflow-x: hidden;
+            color: var(--text-dark);
+            scroll-behavior: smooth;
+        }
+
+        /* Main Library Section */
+        .library-main {
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Enhanced Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--white);
+            text-decoration: none;
+            letter-spacing: -1px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-green);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            margin: 0 2rem;
+        }
+
+        .search-bar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 0.8rem 3rem 0.8rem 1.5rem;
+            color: var(--white);
+            font-size: 1rem;
+            width: 300px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-bar::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-bar:focus {
+            border-color: var(--primary-green);
+            width: 350px;
+            box-shadow: 0 0 20px rgba(127, 176, 105, 0.3);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-green);
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: var(--secondary-green);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            max-width: 800px;
+            padding: 2rem;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 900;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: heroFadeIn 1.2s ease-out;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--text-light);
+            margin-bottom: 3rem;
+            opacity: 0.9;
+            animation: heroFadeIn 1.5s ease-out 0.3s both;
+            line-height: 1.4;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: heroFadeIn 1.8s ease-out 0.6s both;
+        }
+
+        .btn {
+            padding: 1.2rem 2.5rem;
+            border-radius: 60px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: var(--white);
+            box-shadow: 0 15px 40px rgba(127, 176, 105, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: var(--white);
+            border: 2px solid var(--glass-border);
+            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Collection Section */
+        .collection {
+            padding: 8rem 2rem;
+            background: var(--white);
+            position: relative;
+        }
+
+        .collection-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-medium);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Filter Controls */
+        .filter-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 0.8rem 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary-green);
+            border-color: var(--primary-green);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Book Collection Grid */
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .book-card {
+            background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .book-card:hover::before {
+            left: 100%;
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary-green);
+        }
+
+        .book-cover {
+            width: 120px;
+            height: 160px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border-radius: 10px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .book-card:hover .book-cover {
+            transform: rotateY(15deg) rotateX(5deg);
+        }
+
+        .book-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .book-author {
+            font-size: 1rem;
+            color: var(--text-medium);
+            margin-bottom: 0.5rem;
+        }
+
+        .book-genre {
+            display: inline-block;
+            background: var(--light-green);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .book-rating {
+            display: flex;
+            justify-content: center;
+            gap: 0.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 1rem;
+        }
+
+        .read-btn {
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0.8rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .read-btn:hover {
+            background: var(--secondary-green);
+            transform: translateY(-2px);
+        }
+
+        /* 3D Reader (initially hidden) */
+        .reader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .reader-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #reader-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .reader-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: all;
+        }
+
+        .book-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-title-reader {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #7fb069;
+            margin-bottom: 0.3rem;
+        }
+
+        .book-author-reader {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .reader-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:hover {
+            background: rgba(127, 176, 105, 0.3);
+            border-color: #7fb069;
+            transform: translateY(-2px);
+        }
+
+        .control-btn.active {
+            background: rgba(127, 176, 105, 0.5);
+            border-color: #7fb069;
+        }
+
+        /* Exit Button */
+        .exit-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255, 0, 0, 0.3);
+            border: 2px solid rgba(255, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            pointer-events: all;
+            z-index: 20;
+        }
+
+        .exit-btn:hover {
+            background: rgba(255, 0, 0, 0.6);
+            border-color: #ff0000;
+            transform: scale(1.1);
+        }
+
+        .page-navigation {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            pointer-events: all;
+        }
+
+        .nav-btn {
+            background: rgba(127, 176, 105, 0.3);
+            border: 2px solid #7fb069;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .nav-btn:hover {
+            background: rgba(127, 176, 105, 0.6);
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(127, 176, 105, 0.4);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .page-info {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .text-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 800px;
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-family: 'Crimson Text', serif;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            opacity: 0;
+            transition: all 0.4s ease;
+            pointer-events: none;
+        }
+
+        .text-overlay.visible {
+            opacity: 1;
+        }
+
+        .text-overlay h1 {
+            font-size: 2rem;
+            color: #7fb069;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .text-overlay h2 {
+            font-size: 1.5rem;
+            color: #a8cc8c;
+            margin: 2rem 0 1rem 0;
+        }
+
+        .text-overlay p {
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        /* Search Results */
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .search-results.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .search-result-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-result-item:hover {
+            background: rgba(127, 176, 105, 0.2);
+        }
+
+        .search-result-title {
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.3rem;
+        }
+
+        .search-result-author {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Animations */
+        @keyframes heroFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #7fb069;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .search-container {
+                margin: 0 1rem;
+            }
+
+            .search-bar {
+                width: 200px;
+            }
+
+            .search-bar:focus {
+                width: 250px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .books-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .reader-header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Library Section -->
+    <div class="library-main" id="libraryMain">
+        <!-- Enhanced Header -->
+        <header class="header">
+            <div class="nav-container">
+                <a href="#home" class="logo">Jaless</a>
+                
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <input type="text" class="search-bar" id="searchInput" placeholder="Search books, authors, genres...">
+                    <button class="search-btn" id="searchBtn">🔍</button>
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+                
+                <nav class="nav-menu">
+                    <a href="#collection" class="nav-link">Collection</a>
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div id="canvas-container"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">Jaless</h1>
+                <p class="hero-subtitle">Discover a New Reading Experience with Immersive 3D Technology</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="scrollToCollection()">Explore Collection</button>
+                    <button class="btn btn-secondary" onclick="scrollToFeatures()">Learn More</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Collection Section -->
+        <section class="collection" id="collection">
+            <div class="collection-container">
+                <div class="section-header">
+                    <h2 class="section-title">Our 3D Book Collection</h2>
+                    <p class="section-subtitle">Dive into our curated collection of interactive books, each designed for an immersive 3D reading experience</p>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="filter-controls">
+                    <button class="filter-btn active" data-filter="all">All Books</button>
+                    <button class="filter-btn" data-filter="fiction">Fiction</button>
+                    <button class="filter-btn" data-filter="science">Science</button>
+                    <button class="filter-btn" data-filter="technology">Technology</button>
+                    <button class="filter-btn" data-filter="philosophy">Philosophy</button>
+                    <button class="filter-btn" data-filter="biography">Biography</button>
+                </div>
+
+                <!-- Books Grid -->
+                <div class="books-grid" id="booksGrid">
+                    <!-- Books will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 3D Reader (initially hidden) -->
+    <div class="reader-container" id="readerContainer">
+        <canvas id="reader-canvas"></canvas>
+        
+        <!-- Exit Button -->
+        <button class="exit-btn" id="exitReader" title="Exit Reader">✕</button>
+        
+        <!-- Loading Screen -->
+        <div class="loading-screen" id="loadingScreen">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading your 3D reading experience...</div>
+        </div>
+
+        <!-- UI Overlay -->
+        <div class="ui-overlay">
+            <!-- Reader Header -->
+            <div class="reader-header">
+                <div class="book-info">
+                    <div class="book-title-reader" id="currentBookTitle">The Digital Renaissance</div>
+                    <div class="book-author-reader" id="currentBookAuthor">by Future Authors</div>
+                </div>
+                <div class="reader-controls">
+                    <button class="control-btn active" id="focusBtn">📖 Focus</button>
+                    <button class="control-btn" id="immersiveBtn">🌌 Immersive</button>
+                    <button class="control-btn" id="ambientBtn">🎨 Ambient</button>
+                </div>
+            </div>
+
+            <!-- Page Navigation -->
+            <div class="page-navigation">
+                <button class="nav-btn" id="prevBtn">‹</button>
+                <div class="page-info">
+                    <span id="currentPage">1</span> / <span id="totalPages">80</span>
+                </div>
+                <button class="nav-btn" id="nextBtn">›</button>
+            </div>
+
+            <!-- Text Content Overlay -->
+            <div class="text-overlay" id="textOverlay">
+                <h1>Chapter 1: The Beginning</h1>
+                <p>In the vast expanse of digital innovation, where technology meets imagination, a new era of reading emerges. The traditional boundaries between reader and story dissolve, creating an immersive experience that transcends the physical limitations of paper and ink.</p>
+                
+                <p>Welcome to the future of literature, where every word floats in three-dimensional space, every chapter unfolds like a living world, and every page turn becomes a journey through infinite possibilities.</p>
+                
+                <h2>The Revolution Begins</h2>
+                <p>As you navigate through these digital pages, notice how the text responds to your presence, how the words seem to breathe with life, and how the story adapts to your reading rhythm. This is not merely reading—this is experiencing literature in its purest, most dynamic form.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Book Collection Data
+        const bookCollection = [
+            {
+                id: 1,
+                title: "The Digital Renaissance",
+                author: "Future Authors",
+                genre: "Technology",
+                rating: 5,
+                cover: "📚",
+                category: "technology",
+                content: {
+                    0: {
+                        title: "Chapter 1: The Beginning",
+                        content: "In the vast expanse of digital innovation, where technology meets imagination, a new era of reading emerges. The traditional boundaries between reader and story dissolve, creating an immersive experience that transcends the physical limitations of paper and ink.\n\nWelcome to the future of literature, where every word floats in three-dimensional space, every chapter unfolds like a living world, and every page turn becomes a journey through infinite possibilities.\n\nThe Revolution Begins\n\nAs you navigate through these digital pages, notice how the text responds to your presence, how the words seem to breathe with life, and how the story adapts to your reading rhythm."
+                    }
+                }
+            },
+            {
+                id: 2,
+                title: "Quantum Dreams",
+                author: "Dr. Sarah Chen",
+                genre: "Science Fiction",
+                rating: 4,
+                cover: "🔬",
+                category: "fiction",
+                content: {
+                    0: {
+                        title: "Chapter 1: The Particle Dance",
+                        content: "In the realm where particles dance and waves collapse, reality bends to the observer's will. Sarah had always known that quantum mechanics would change everything, but she never imagined it would change her.\n\nThe laboratory hummed with the soft buzz of quantum computers, their supercooled processors calculating possibilities that existed in superposition until the moment of observation.\n\nDiscovery\n\nThat night, as the stars aligned in perfect quantum harmony, Sarah discovered something that would reshape our understanding of consciousness itself."
+                    }
+                }
+            },
+            {
+                id: 3,
+                title: "Philosophy of Tomorrow",
+                author: "Marcus Aurelius Jr.",
+                genre: "Philosophy",
+                rating: 5,
+                cover: "🤔",
+                category: "philosophy",
+                content: {
+                    0: {
+                        title: "Chapter 1: The Nature of Digital Being",
+                        content: "What does it mean to exist in a digital age? As we transcend the boundaries between physical and virtual reality, we must examine the fundamental nature of consciousness, identity, and purpose.\n\nThe ancient philosophers could never have imagined a world where thoughts could be digitized, where memories could be stored in silicon, and where the very essence of human experience could be replicated in code.\n\nModern Contemplations\n\nYet their wisdom remains as relevant today as it was millennia ago. The questions they posed about virtue, happiness, and the good life take on new dimensions in our interconnected world."
+                    }
+                }
+            },
+            {
+                id: 4,
+                title: "Space Odyssey 2025",
+                author: "Luna Martinez",
+                genre: "Science Fiction",
+                rating: 4,
+                cover: "🚀",
+                category: "fiction",
+                content: {
+                    0: {
+                        title: "Chapter 1: Beyond the Stars",
+                        content: "The year 2025 marked humanity's first successful mission to establish a permanent colony on Mars. Luna Martinez, lead engineer of the Ares Project, stood at the observation deck of the interplanetary transport vessel, watching Earth shrink to a pale blue dot.\n\nThe journey ahead would test not only their technological capabilities but also their understanding of what it means to be human in the vast emptiness of space.\n\nThe Red Planet Beckons\n\nMars appeared on the horizon, its rusty surface hiding secrets that would challenge everything humanity thought they knew about life in the universe."
+                    }
+                }
+            },
+            {
+                id: 5,
+                title: "AI Ethics Handbook",
+                author: "Dr. Elena Vasquez",
+                genre: "Technology",
+                rating: 5,
+                cover: "🤖",
+                category: "technology",
+                content: {
+                    0: {
+                        title: "Chapter 1: The Moral Machine",
+                        content: "As artificial intelligence becomes increasingly sophisticated, we face unprecedented ethical challenges. How do we ensure that AI systems act in accordance with human values? What happens when machines can make moral decisions?\n\nThis handbook explores the complex intersection of technology and ethics, providing frameworks for understanding and addressing the moral implications of artificial intelligence.\n\nFundamental Questions\n\nWe must ask ourselves: What rights, if any, should AI systems have? How do we balance innovation with responsibility? And perhaps most importantly, what does it mean to be human in an age of artificial minds?"
+                    }
+                }
+            },
+            {
+                id: 6,
+                title: "The Innovator's Journey",
+                author: "Steve Jobsworth",
+                genre: "Biography",
+                rating: 4,
+                cover: "💡",
+                category: "biography",
+                content: {
+                    0: {
+                        title: "Chapter 1: The Spark of Innovation",
+                        content: "Every great innovation begins with a simple idea, a moment of clarity that cuts through the noise of conventional thinking. Steve Jobsworth's journey from garage tinkerer to technology visionary exemplifies the power of persistence, creativity, and unwavering belief in one's vision.\n\nThis biography traces the path of a revolutionary mind, exploring the challenges, failures, and breakthroughs that shaped the modern technological landscape.\n\nEarly Dreams\n\nAs a child, Steve would spend hours taking apart electronic devices, not to break them, but to understand how they worked. This curiosity would become the driving force behind innovations that changed the world."
+                    }
+                }
+            }
+        ];
+
+        // 3D Scene Variables
+        let scene, camera, renderer, book, pages = [];
+        let currentPage = 0, totalPages = 80;
+        let isPageTurning = false;
+        let currentBook = null;
+        let mouseX = 0, mouseY = 0;
+        let bookRotationX = 0.2, bookRotationY = 0.3;
+        let particles = [];
+
+        // Initialize the application
+        function initApp() {
+            populateBookCollection();
+            setupSearchFunctionality();
+            setupFilterFunctionality();
+            setupEventListeners();
+            init3DBackground();
+        }
+
+        // Populate book collection
+        function populateBookCollection() {
+            const booksGrid = document.getElementById('booksGrid');
+            booksGrid.innerHTML = '';
+
+            bookCollection.forEach(book => {
+                const bookCard = createBookCard(book);
+                booksGrid.appendChild(bookCard);
+            });
+        }
+
+        // Create individual book card
+        function createBookCard(book) {
+            const card = document.createElement('div');
+            card.className = 'book-card';
+            card.dataset.category = book.category;
+            
+            const stars = '★'.repeat(book.rating) + '☆'.repeat(5 - book.rating);
+            
+            card.innerHTML = `
+                <div class="book-cover">${book.cover}</div>
+                <h3 class="book-title">${book.title}</h3>
+                <p class="book-author">${book.author}</p>
+                <span class="book-genre">${book.genre}</span>
+                <div class="book-rating">
+                    ${stars.split('').map(star => `<span class="star">${star}</span>`).join('')}
+                </div>
+                <button class="read-btn" onclick="openBook(${book.id})">Read in 3D</button>
+            `;
+            
+            return card;
+        }
+
+        // Search functionality
+        function setupSearchFunctionality() {
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const searchResults = document.getElementById('searchResults');
+            
+            let searchTimeout;
+            
+            function performSearch() {
+                const query = searchInput.value.toLowerCase().trim();
+                
+                if (query.length < 2) {
+                    searchResults.classList.remove('visible');
+                    return;
+                }
+                
+                const results = bookCollection.filter(book => 
+                    book.title.toLowerCase().includes(query) ||
+                    book.author.toLowerCase().includes(query) ||
+                    book.genre.toLowerCase().includes(query)
+                );
+                
+                displaySearchResults(results);
+            }
+            
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(performSearch, 300);
+            });
+            
+            searchBtn.addEventListener('click', performSearch);
+            
+            // Close search results when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-container')) {
+                    searchResults.classList.remove('visible');
+                }
+            });
+        }
+
+        function displaySearchResults(results) {
+            const searchResults = document.getElementById('searchResults');
+            
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div class="search-result-item">No books found</div>';
+            } else {
+                searchResults.innerHTML = results.map(book => `
+                    <div class="search-result-item" onclick="openBook(${book.id})">
+                        <div class="search-result-title">${book.title}</div>
+                        <div class="search-result-author">by ${book.author}</div>
+                    </div>
+                `).join('');
+            }
+            
+            searchResults.classList.add('visible');
+        }
+
+        // Filter functionality
+        function setupFilterFunctionality() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active button
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Filter books
+                    const filter = btn.dataset.filter;
+                    const bookCards = document.querySelectorAll('.book-card');
+                    
+                    bookCards.forEach(card => {
+                        if (filter === 'all' || card.dataset.category === filter) {
+                            card.style.display = 'block';
+                            setTimeout(() => {
+                                card.style.opacity = '1';
+                                card.style.transform = 'translateY(0)';
+                            }, 100);
+                        } else {
+                            card.style.opacity = '0';
+                            card.style.transform = 'translateY(20px)';
+                            setTimeout(() => {
+                                card.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                });
+            });
+        }
+
+        // Open book in 3D reader
+        function openBook(bookId) {
+            currentBook = bookCollection.find(book => book.id === bookId);
+            if (!currentBook) return;
+            
+            // Update reader UI with book info
+            document.getElementById('currentBookTitle').textContent = currentBook.title;
+            document.getElementById('currentBookAuthor').textContent = `by ${currentBook.author}`;
+            
+            // Show reader container
+            const readerContainer = document.getElementById('readerContainer');
+            readerContainer.classList.add('active');
+            
+            // Hide search results
+            document.getElementById('searchResults').classList.remove('visible');
+            
+            // Initialize 3D reader
+            setTimeout(() => {
+                init3DReader();
+            }, 100);
+        }
+
+        // Exit 3D reader
+        function exitReader() {
+            const readerContainer = document.getElementById('readerContainer');
+            readerContainer.classList.remove('active');
+            
+            // Clean up 3D scene
+            if (renderer) {
+                const canvas = renderer.domElement;
+                if (canvas && canvas.parentNode) {
+                    canvas.parentNode.removeChild(canvas);
+                }
+                renderer.dispose();
+                renderer = null;
+            }
+            
+            // Reset variables
+            scene = null;
+            camera = null;
+            book = null;
+            pages = [];
+            currentPage = 0;
+            currentBook = null;
+        }
+
+        // Setup general event listeners
+        function setupEventListeners() {
+            // Exit reader button
+            document.getElementById('exitReader').addEventListener('click', exitReader);
+            
+            // Escape key to exit reader
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const readerContainer = document.getElementById('readerContainer');
+                    if (readerContainer.classList.contains('active')) {
+                        exitReader();
+                    }
+                }
+            });
+            
+            // Smooth scroll functions
+            window.scrollToCollection = () => {
+                document.getElementById('collection').scrollIntoView({ behavior: 'smooth' });
+            };
+            
+            window.scrollToFeatures = () => {
+                // Scroll to features section if it exists, otherwise to collection
+                const featuresSection = document.getElementById('features') || document.getElementById('collection');
+                featuresSection.scrollIntoView({ behavior: 'smooth' });
+            };
+        }
+
+        // Initialize 3D background for hero section
+        function init3DBackground() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            container.appendChild(renderer.domElement);
+
+            // Create floating books for background
+            createFloatingBooks();
+            
+            // Add lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+
+            camera.position.z = 8;
+
+            // Mouse tracking for parallax
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            });
+
+            animateBackground();
+        }
+
+        function createFloatingBooks() {
+            const bookGeometry = new THREE.BoxGeometry(0.6, 0.8, 0.1);
+            const colors = [0x7fb069, 0x6fa66b, 0x4a90e2, 0xa8cc8c, 0x667eea, 0x764ba2];
+            
+            for (let i = 0; i < 25; i++) {
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const bookMaterial = new THREE.MeshLambertMaterial({ 
+                    color: color,
+                    transparent: true,
+                    opacity: 0.7
+                });
+                
+                const bookMesh = new THREE.Mesh(bookGeometry, bookMaterial);
+                
+                bookMesh.position.x = (Math.random() - 0.5) * 20;
+                bookMesh.position.y = (Math.random() - 0.5) * 20;
+                bookMesh.position.z = (Math.random() - 0.5) * 10;
+                
+                bookMesh.rotation.x = Math.random() * Math.PI;
+                bookMesh.rotation.y = Math.random() * Math.PI;
+                bookMesh.rotation.z = Math.random() * Math.PI;
+                
+                bookMesh.userData = {
+                    originalPosition: bookMesh.position.clone(),
+                    speed: Math.random() * 0.02 + 0.005,
+                    amplitude: Math.random() * 2 + 1
+                };
+                
+                scene.add(bookMesh);
+                particles.push(bookMesh);
+            }
+        }
+
+        function animateBackground() {
+            requestAnimationFrame(animateBackground);
+
+            particles.forEach((particle, index) => {
+                particle.rotation.x += particle.userData.speed;
+                particle.rotation.y += particle.userData.speed * 0.7;
+                
+                particle.position.y = particle.userData.originalPosition.y + 
+                    Math.sin(Date.now() * 0.001 + index) * particle.userData.amplitude;
+            });
+
+            // Camera follows mouse for parallax effect
+            if (camera) {
+                camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+                camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+            }
+
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        // Initialize 3D Reader
+        function init3DReader() {
+            const canvas = document.getElementById('reader-canvas');
+            
+            // Create new scene for reader
+            const readerScene = new THREE.Scene();
+            const readerCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const readerRenderer = new THREE.WebGLRenderer({ 
+                canvas: canvas,
+                alpha: true, 
+                antialias: true 
+            });
+            
+            readerRenderer.setSize(window.innerWidth, window.innerHeight);
+            readerRenderer.setClearColor(0x000000, 0);
+            readerRenderer.shadowMap.enabled = true;
+            readerRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            // Store references for reader
+            scene = readerScene;
+            camera = readerCamera;
+            renderer = readerRenderer;
+
+            // Create the 3D book
+            create3DBook();
+            
+            // Add lighting
+            setupReaderLighting();
+            
+            // Set initial camera position
+            camera.position.set(0, 2, 8);
+            camera.lookAt(0, 0, 0);
+
+            // Event listeners for reader
+            setupReaderEventListeners();
+
+            // Start animation loop
+            animateReader();
+
+            // Hide loading screen and show content
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    document.getElementById('textOverlay').classList.add('visible');
+                    updatePageContent();
+                }, 500);
+            }, 2000);
+        }
+
+        function create3DBook() {
+            const bookGroup = new THREE.Group();
+            
+            // Book cover
+            const coverGeometry = new THREE.BoxGeometry(4, 6, 0.3);
+            const coverMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x2c3e50,
+                shininess: 100,
+                transparent: true,
+                opacity: 0.9
+            });
+            const cover = new THREE.Mesh(coverGeometry, coverMaterial);
+            cover.castShadow = true;
+            cover.receiveShadow = true;
+            bookGroup.add(cover);
+
+            // Book pages
+            pages = [];
+            for (let i = 0; i < 20; i++) {
+                const pageGeometry = new THREE.PlaneGeometry(3.8, 5.8);
+                const pageMaterial = new THREE.MeshLambertMaterial({ 
+                    color: 0xffffff,
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.95
+                });
+                
+                const page = new THREE.Mesh(pageGeometry, pageMaterial);
+                page.position.z = 0.1 - (i * 0.01);
+                page.rotation.y = i * 0.02;
+                
+                page.userData = {
+                    originalRotation: page.rotation.y,
+                    animationOffset: i * 0.1
+                };
+                
+                bookGroup.add(page);
+                pages.push(page);
+            }
+
+            scene.add(bookGroup);
+            book = bookGroup;
+        }
+
+        function setupReaderLighting() {
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 10, 5);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+
+            const pointLight = new THREE.PointLight(0x7fb069, 0.8, 50);
+            pointLight.position.set(0, 5, 3);
+            scene.add(pointLight);
+        }
+
+        function setupReaderEventListeners() {
+            document.getElementById('prevBtn').addEventListener('click', previousPage);
+            document.getElementById('nextBtn').addEventListener('click', nextPage);
+            
+            // View mode controls
+            document.getElementById('focusBtn').addEventListener('click', () => setViewMode('focus'));
+            document.getElementById('immersiveBtn').addEventListener('click', () => setViewMode('immersive'));
+            document.getElementById('ambientBtn').addEventListener('click', () => setViewMode('ambient'));
+            
+            // Mouse controls
+            document.addEventListener('mousemove', onReaderMouseMove);
+            document.addEventListener('mousedown', onReaderMouseDown);
+            document.addEventListener('mouseup', onReaderMouseUp);
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', onReaderKeyDown);
+        }
+
+        let isMouseDown = false;
+
+        function onReaderMouseMove(event) {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            if (isMouseDown && book) {
+                bookRotationY += (event.movementX || 0) * 0.01;
+                bookRotationX += (event.movementY || 0) * 0.01;
+                bookRotationX = Math.max(-Math.PI/3, Math.min(Math.PI/3, bookRotationX));
+            }
+        }
+
+        function onReaderMouseDown() {
+            isMouseDown = true;
+        }
+
+        function onReaderMouseUp() {
+            isMouseDown = false;
+        }
+
+        function onReaderKeyDown(event) {
+            if (!document.getElementById('readerContainer').classList.contains('active')) return;
+            
+            switch(event.key) {
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                    event.preventDefault();
+                    previousPage();
+                    break;
+                case 'ArrowRight':
+                case 'ArrowDown':
+                case ' ':
+                    event.preventDefault();
+                    nextPage();
+                    break;
+            }
+        }
+
+        function animateReader() {
+            if (!renderer) return;
+            
+            requestAnimationFrame(animateReader);
+
+            if (book) {
+                book.rotation.y += (bookRotationY - book.rotation.y) * 0.1;
+                book.rotation.x += (bookRotationX - book.rotation.x) * 0.1;
+                book.position.y = Math.sin(Date.now() * 0.001) * 0.1;
+
+                pages.forEach((page, index) => {
+                    const time = Date.now() * 0.001;
+                    page.rotation.y = page.userData.originalRotation + 
+                        Math.sin(time + page.userData.animationOffset) * 0.01;
+                });
+            }
+
+            if (camera) {
+                camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+                camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
+                camera.lookAt(0, 0, 0);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages - 1 && !isPageTurning) {
+                turnPage(1);
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 0 && !isPageTurning) {
+                turnPage(-1);
+            }
+        }
+
+        function turnPage(direction) {
+            isPageTurning = true;
+            currentPage += direction;
+            
+            document.getElementById('currentPage').textContent = currentPage + 1;
+            document.getElementById('prevBtn').disabled = currentPage === 0;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages - 1;
+            
+            updatePageContent();
+            
+            setTimeout(() => {
+                isPageTurning = false;
+            }, 1000);
+        }
+
+        function updatePageContent() {
+            const textOverlay = document.getElementById('textOverlay');
+            
+            if (!currentBook || !currentBook.content || !currentBook.content[0]) {
+                return;
+            }
+            
+            const content = currentBook.content[0];
+            
+            textOverlay.classList.remove('visible');
+            
+            setTimeout(() => {
+                textOverlay.innerHTML = `
+                    <h1>${content.title}</h1>
+                    ${content.content.split('\n\n').map(p => p.trim() ? 
+                        (p.includes(':') && !p.includes('.') ? 
+                            `<h2>${p}</h2>` : `<p>${p}</p>`) : '').join('')}
+                `;
+                
+                textOverlay.classList.add('visible');
+            }, 200);
+        }
+
+        function setViewMode(mode) {
+            document.querySelectorAll('.control-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`#${mode}Btn`).classList.add('active');
+            
+            const header = document.querySelector('.reader-header');
+            const navigation = document.querySelector('.page-navigation');
+            
+            switch(mode) {
+                case 'immersive':
+                    header.style.opacity = '0.3';
+                    navigation.style.opacity = '0.5';
+                    break;
+                case 'focus':
+                    header.style.opacity = '1';
+                    navigation.style.opacity = '1';
+                    break;
+                case 'ambient':
+                    header.style.opacity = '0.7';
+                    navigation.style.opacity = '0.7';
+                    break;
+            }
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+
+        // Initialize app when page loads
+        window.addEventListener('load', initApp);
+    </script>
+</body>
+</html>

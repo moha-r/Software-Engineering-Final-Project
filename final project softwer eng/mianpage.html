@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jaless - Digital Library Profile</title>
+    <style>
+        :root {
+            --primary: #4ba3a6;
+            --primary-dark: #4ba3a6;
+            --secondary: #c8d8e4;
+            --accent: #52ab98;
+            --light: #f8fafc;
+            --white: #fff;
+            --dark: #222;
+            --shadow: 0 4px 24px #4ba3a6;
+        }
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body {
+            margin: 0;
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.7;
+        }
+        /* Navigation Bar */
+        nav {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.2rem 2.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .nav-logo {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.5rem 1.1rem;
+            border-radius: 22px;
+            transition: background 0.18s, color 0.18s;
+        }
+        .nav-links a:hover, .nav-links a:focus {
+            background: var(--primary);
+            color: var(--white);
+        }
+        /* Hamburger for mobile */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .nav-toggle span {
+            height: 3px;
+            width: 25px;
+            background: var(--primary);
+            margin: 4px 0;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        /* Hero Section */
+        .hero {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2.5rem;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            color: var(--white);
+            border-radius: 0 0 32px 32px;
+            padding: 4rem 2rem 3rem 2rem;
+            margin-bottom: 2.5rem;
+        }
+        .hero-content {
+            flex: 1 1 0;
+        }
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+        .hero-desc {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            max-width: 480px;
+        }
+        .hero-btn {
+            background: var(--white);
+            color: var(--primary-dark);
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 0.8rem 2.2rem;
+            border-radius: 30px;
+            box-shadow: 0 2px 8px rgba(43, 103, 119, 0.08);
+            cursor: pointer;
+            transition: background 0.18s, color 0.18s, transform 0.12s;
+        }
+        .hero-btn:hover, .hero-btn:focus {
+            background: var(--accent);
+            color: var(--white);
+            transform: translateY(-2px) scale(1.04);
+        }
+        .hero-image {
+            flex: 1 1 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-image img {
+            width: 320px;
+            max-width: 100%;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(43,103,119,0.18);
+        }
+        main {
+            max-width: 1080px;
+            margin: 0 auto 2.5rem auto;
+            padding: 0 1.2rem;
+        }
+        section {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2.2rem;
+            padding: 2.3rem 2rem;
+            transition: box-shadow 0.2s, transform 0.18s;
+        }
+        section:hover {
+            box-shadow: 0 8px 32px rgba(43, 103, 119, 0.16);
+            transform: translateY(-2px) scale(1.01);
+        }
+        section h2 {
+            color: var(--primary);
+            margin-top: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .about-columns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        .about-col {
+            flex: 1 1 270px;
+            min-width: 220px;
+        }
+        .services-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin: 1.5rem 0 0 0;
+        }
+        .service-item {
+            flex: 1 1 240px;
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 1.5rem 1.2rem;
+            min-width: 180px;
+            text-align: left;
+            transition: box-shadow 0.18s, transform 0.18s;
+            box-shadow: 0 2px 10px rgba(43,103,119,0.06);
+            cursor: pointer;
+        }
+        .service-item:hover, .service-item:focus {
+            box-shadow: 0 8px 24px rgba(43,103,119,0.13);
+            background: var(--accent);
+            color: var(--white);
+            transform: translateY(-3px) scale(1.03);
+        }
+        .service-item h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: color 0.18s;
+        }
+        .service-item:hover h3, .service-item:focus h3 {
+            color: var(--white);
+        }
+        .contact-info {
+            line-height: 2;
+            font-size: 1.08rem;
+        }
+        /* Responsive Styles */
+        @media (max-width: 900px) {
+            .hero {
+                flex-direction: column-reverse;
+                text-align: center;
+                padding: 2.5rem 1rem 2rem 1rem;
+            }
+            .hero-content, .hero-image {
+                width: 100%;
+            }
+            .about-columns {
+                flex-direction: column;
+                gap: 1.2rem;
+            }
+        }
+        @media (max-width: 700px) {
+            nav {
+                padding: 1rem 1.2rem;
+            }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 60px;
+                right: 1.2rem;
+                background: var(--white);
+                flex-direction: column;
+                box-shadow: var(--shadow);
+                border-radius: 10px;
+                min-width: 150px;
+                z-index: 99;
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .nav-toggle {
+                display: flex;
+            }
+            .hero {
+                padding: 2rem 0.5rem 1.2rem 0.5rem;
+            }
+            main {
+                padding: 0 0.5rem;
+            }
+            section {
+                padding: 1.2rem 0.8rem;
+            }
+            .services-list {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+        /* Modern Typography */
+        h1, h2, h3, h4 {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            letter-spacing: 0.5px;
+        }
+        h1, .hero-title {
+            font-weight: 800;
+        }
+        p, a, li {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+        }
+        /* Section divider for visual separation */
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border: none;
+            margin: 2.5rem 0 2rem 0;
+            border-radius: 2px;
+            opacity: 0.12;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="#" class="nav-logo">Jaless</a>
+        <div class="nav-links" id="mainNav">
+            <a href="#about">about</a>
+            <a href="#vision">Vision</a>
+            <a href="#mission">Mission</a>
+            <a href="#services">Services</a>
+            <a href="#features">Key Features</a>
+            <a href="#future">Future Plans</a>
+            <a href="login.html">Login</a>
+        </div>
+        <div class="nav-toggle" id="navToggle" aria-label="Toggle navigation" tabindex="0">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-title">Welcome to Jaless Library</div>
+            <div class="hero-desc">
+                Discover a comprehensive digital platform dedicated to knowledge, learning, and innovation. Jaless connects you with a vast universe of resources anytime, anywhere.
+            </div>
+            <a href="home.html" class="hero-btn">Explore Our Library</a>
+        </div>
+        <div class="hero-image">
+            <!-- Placeholder illustration, replace src with real image if available -->
+            <img src="PHOTO-2025-08-16-04-27-24-removebg-preview.png" alt="Jaless Digital Library Illustration">
+        </div>
+    </section>
+    <main>
+        <section id="about">
+            <h2>About the Site</h2>
+            <div class="about-columns">
+                <div class="about-col">
+                    <p>
+                        <strong>Jaless</strong> is an innovative digital library platform designed to provide seamless access to an extensive collection of books, articles, journals, and multimedia resources. Serving students, educators, researchers, and lifelong learners, Jaless fosters a vibrant community centered on knowledge and discovery.
+                    </p>
+                </div>
+                <div class="about-col">
+                    <p>
+                        Our user-friendly interface combined with cutting-edge technology ensures effortless navigation and resource discovery, empowering users to explore information efficiently and effectively.
+                    </p>
+                </div>
+            </div>
+        </section>
+        <hr class="divider">
+        <section id="vision">
+            <h2>Vision</h2>
+            <p>
+                To become a leading digital knowledge hub that bridges information and innovation, inspiring a global community to share, learn, and grow for a brighter future.
+            </p>
+        </section>
+        <section id="mission">
+            <h2>Mission</h2>
+            <p>
+                To empower individuals and communities by providing easy and equitable access to diverse digital information resources, supporting lifelong learning and academic excellence through advanced technology.
+            </p>
+        </section>
+        <hr class="divider">
+        <section id="services">
+            <h2>Services</h2>
+            <div class="services-list">
+                <div class="service-item" tabindex="0">
+                    <h3>Extensive Digital Collections</h3>
+                    <p>Access a wide range of eBooks, journals, research papers, and multimedia content across various fields and interests.</p>
+                </div>
+                <div class="service-item" tabindex="0">
+                    <h3>Advanced Search Tools</h3>
+                    <p>Utilize powerful search capabilities to quickly locate relevant resources tailored to your needs.</p>
+                </div>
+                <div class="service-item" tabindex="0">
+                    <h3>User Account Management</h3>
+                    <p>Create personalized accounts to save favorites, track reading history, and receive tailored recommendations.</p>
+                </div>
+                <div class="service-item" tabindex="0">
+                    <h3>24/7 Online Access</h3>
+                    <p>Enjoy uninterrupted access to Jaless resources anytime and from any device.</p>
+                </div>
+            </div>
+        </section>
+        <hr class="divider">
+        <section id="features">
+            <h2>Key Features</h2>
+            <div class="services-list">
+                <div class="service-item" tabindex="0">
+                    <h3>Interactive User Interface</h3>
+                    <p>Engage with a sleek, intuitive design that enhances user experience and navigation.</p>
+                </div>
+                <div class="service-item" tabindex="0">
+                    <h3>Multimedia Integration</h3>
+                    <p>Access videos, podcasts, and interactive content alongside traditional reading materials.</p>
+                </div>
+                <div class="service-item" tabindex="0">
+                    <h3>Collaborative Tools</h3>
+                    <p>Facilitate group studies and knowledge sharing through integrated collaboration features.</p>
+                </div>
+                <div class="service-item" tabindex="0">
+                    <h3>Mobile Compatibility</h3>
+                    <p>Use Jaless seamlessly on smartphones and tablets for learning on the go.</p>
+                </div>
+            </div>
+        </section>
+        <hr class="divider">
+        <section id="future">
+            <h2>Future Plans</h2>
+            <p>
+                Jaless aims to continuously evolve by incorporating AI-driven personalized learning paths, expanding multilingual content, and enhancing community engagement features to better serve our diverse user base.
+            </p>
+        </section>
+    </main>
+    <script>
+        // Responsive Nav Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('mainNav');
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+        navToggle.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                navLinks.classList.toggle('active');
+            }
+        });
+        // Close nav menu on link click (mobile)
+        Array.from(navLinks.getElementsByTagName('a')).forEach(link => {
+            link.addEventListener('click', () => {
+                if(window.innerWidth <= 700) navLinks.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
